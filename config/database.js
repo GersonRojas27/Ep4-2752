@@ -3,9 +3,8 @@ const { Sequelize } = require('sequelize');
 const sequelize = new Sequelize('techstore', 'root', 'usbw', {
   host: 'localhost',
   dialect: 'mysql',
-  // Esto permite que Sequelize cree la base de datos si no existe
   define: {
-    timestamps: false // Si no quieres que se creen automáticamente created_at y updated_at
+    timestamps: false
   }
 });
 
