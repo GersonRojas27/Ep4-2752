@@ -1,51 +1,57 @@
-const Product = require('./models/product');
+const Product = require('../models/product');
 
 exports.createProduct = async (req, res) => {
   try {
     const product = await Product.create(req.body);
     res.status(201).json(product);
   } catch (error) {
-    res.status(400).json({ error: error.message });
+    res.status(500).json({ error: 'Error al crear el producto' });
   }
 };
 
-exports.getProduct = async (req, res) => {
+exports.getAllProducts = async (req, res) => {
+  try {
+    const products = await Product.findAll();
+    res.status(200).json(products);
+  } catch (error) {
+    res.status(500).json({ error: 'Error al obtener los productos' });
+  }
+};
+
+exports.getProductById = async (req, res) => {
   try {
     const product = await Product.findByPk(req.params.id);
     if (!product) {
-      return res.status(404).json({ error: 'No se encontro' });
+      return res.status(404).json({ error: 'Producto no encontrado' });
     }
-    res.json(product);
+    res.status(200).json(product);
   } catch (error) {
-    res.status(400).json({ error: error.message });
+    res.status(500).json({ error: 'Error al obtener el producto' });
   }
 };
 
 exports.updateProduct = async (req, res) => {
   try {
-    const [updated] = await Product.update(req.body, {
-      where: { id: req.params.id }
-    });
-    if (!updated) {
-      return res.status(404).json({ error: 'No se encontro' });
+    const product = await Product.findByPk(req.params.id);
+    if (!product) {
+      return res.status(404).json({ error: 'Producto no encontrado' });
     }
-    const updatedProduct = await Product.findByPk(req.params.id);
-    res.json(updatedProduct);
+    await product.update(req.body);
+    res.status(200).json(product);
   } catch (error) {
-    res.status(400).json({ error: error.message });
+    res.status(500).json({ error: 'Error al actualizar el producto' });
   }
 };
 
 exports.deleteProduct = async (req, res) => {
   try {
-    const deleted = await Product.destroy({
-      where: { id: req.params.id }
-    });
-    if (!deleted) {
-      return res.status(404).json({ error: 'No se encontro' });
+    const product = await Product.findByPk(req.params.id);
+    if (!product) {
+      return res.status(404).json({ error: 'Producto no encontrado' });
     }
-    res.status(204).send();
+    await product.destroy();
+    res.status(200).json({ message: 'Producto eliminado' });
   } catch (error) {
-    res.status(400).json({ error: error.message });
+    res.status(500).json({ error: 'Error al eliminar el producto' });
   }
 };

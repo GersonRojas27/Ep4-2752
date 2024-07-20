@@ -5,47 +5,53 @@ exports.createOrder = async (req, res) => {
     const order = await Order.create(req.body);
     res.status(201).json(order);
   } catch (error) {
-    res.status(400).json({ error: error.message });
+    res.status(500).json({ error: 'Error al crear la orden' });
   }
 };
 
-exports.getOrder = async (req, res) => {
+exports.getAllOrders = async (req, res) => {
+  try {
+    const orders = await Order.findAll();
+    res.status(200).json(orders);
+  } catch (error) {
+    res.status(500).json({ error: 'Error al obtener las ordenes' });
+  }
+};
+
+exports.getOrderById = async (req, res) => {
   try {
     const order = await Order.findByPk(req.params.id);
     if (!order) {
-      return res.status(404).json({ error: 'No se encontro' });
+      return res.status(404).json({ error: 'Orden no encontrada' });
     }
-    res.json(order);
+    res.status(200).json(order);
   } catch (error) {
-    res.status(400).json({ error: error.message });
+    res.status(500).json({ error: 'Error al obtener la orden' });
   }
 };
 
 exports.updateOrder = async (req, res) => {
   try {
-    const [updated] = await Order.update(req.body, {
-      where: { id: req.params.id }
-    });
-    if (!updated) {
-      return res.status(404).json({ error: 'No se encontro' });
+    const order = await Order.findByPk(req.params.id);
+    if (!order) {
+      return res.status(404).json({ error: 'Orden no encontrada' });
     }
-    const updatedOrder = await Order.findByPk(req.params.id);
-    res.json(updatedOrder);
+    await order.update(req.body);
+    res.status(200).json(order);
   } catch (error) {
-    res.status(400).json({ error: error.message });
+    res.status(500).json({ error: 'Error al actualizar la orden' });
   }
 };
 
 exports.deleteOrder = async (req, res) => {
   try {
-    const deleted = await Order.destroy({
-      where: { id: req.params.id }
-    });
-    if (!deleted) {
-      return res.status(404).json({ error: 'No se encontro' });
+    const order = await Order.findByPk(req.params.id);
+    if (!order) {
+      return res.status(404).json({ error: 'Orden no encontrada' });
     }
-    res.status(204).send();
+    await order.destroy();
+    res.status(200).json({ message: 'Orden eliminada' });
   } catch (error) {
-    res.status(400).json({ error: error.message });
+    res.status(500).json({ error: 'Error al eliminar la orden' });
   }
 };
