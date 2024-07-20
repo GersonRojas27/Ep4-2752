@@ -1,13 +1,9 @@
-const { Sequelize, DataTypes } = require('sequelize');
+const { DataTypes } = require('sequelize');
 const sequelize = require('../config/database');
 
 const Order = sequelize.define('Order', {
   customerId: {
     type: DataTypes.INTEGER,
-    allowNull: false
-  },
-  products: {
-    type: DataTypes.JSON,
     allowNull: false
   },
   total: {
@@ -16,10 +12,10 @@ const Order = sequelize.define('Order', {
   },
   status: {
     type: DataTypes.STRING,
-    defaultValue: 'pending'
+    allowNull: false
   }
 }, {
-  timestamps: false
+  tableName: 'Orders'
 });
 
 module.exports = Order;
